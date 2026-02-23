@@ -31,10 +31,15 @@ const schema = {
   description={makeDescription('feature', { featureLabel })}
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
   <Breadcrumbs crumbs={[{ label: featureLabel }]} />
 
-  <h1>{featureLabel} Archery Ranges</h1>
-  <p>{ranges.length} ranges nationwide.</p>
+  <h1 class="font-display text-4xl sm:text-5xl font-bold text-ink mb-3">
+    {featureLabel} Archery Ranges
+  </h1>
+  <p class="text-stone text-lg mb-10">{ranges.length} ranges nationwide.</p>
 
-  {ranges.map(r => <ListingCard range={r} />)}
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    {ranges.map(r => <ListingCard range={r} />)}
+  </div>
 </BaseLayout>
