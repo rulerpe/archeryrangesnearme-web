@@ -17,12 +17,20 @@ const { feature: featureSlug } = Astro.params;
 const { featureSlug: _slug } = Astro.props;
 const ranges = filterByFeature(parseRanges(), featureSlug);
 const featureLabel = getFeatureLabel(featureSlug);
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: makeTitle('feature', { featureLabel }),
+  description: makeDescription('feature', { featureLabel }),
+  url: new URL(`/archery-ranges/${featureSlug}/`, Astro.site).toString(),
+};
 ---
 
 <BaseLayout
   title={makeTitle('feature', { featureLabel })}
   description={makeDescription('feature', { featureLabel })}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   <Breadcrumbs crumbs={[{ label: featureLabel }]} />
 
   <h1>{featureLabel} Archery Ranges</h1>

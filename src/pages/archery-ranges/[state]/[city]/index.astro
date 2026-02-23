@@ -33,6 +33,7 @@ const schema = {
   '@type': 'CollectionPage',
   name: makeTitle('city', { city: cityName, state: stateName, count: ranges.length }),
   description: makeDescription('city', { city: cityName, state: stateName, count: ranges.length }),
+  url: new URL(`/archery-ranges/${stateSlug}/${citySlug}/`, Astro.site).toString(),
 };
 ---
 
