@@ -17,14 +17,15 @@ const schemaItems = [
 ];
 ---
 
-<nav aria-label="Breadcrumb">
-  <ol>
-    <li><a href="/">Home</a></li>
+<nav aria-label="Breadcrumb" class="mb-6">
+  <ol class="flex items-center flex-wrap gap-1 text-sm text-stone">
+    <li><a href="/" class="hover:text-forest transition-colors">Home</a></li>
     {crumbs.map((crumb, i) => (
-      <li>
+      <li class="flex items-center gap-1">
+        <span class="text-tan select-none">›</span>
         {crumb.href && i < crumbs.length - 1
-          ? <a href={crumb.href}>{crumb.label}</a>
-          : <span aria-current="page">{crumb.label}</span>
+          ? <a href={crumb.href} class="hover:text-forest transition-colors">{crumb.label}</a>
+          : <span aria-current="page" class="text-ink font-medium">{crumb.label}</span>
         }
       </li>
     ))}
