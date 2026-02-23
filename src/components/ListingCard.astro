@@ -9,42 +9,53 @@ interface Props {
 const { range } = Astro.props;
 const href = `/archery-ranges/${getStateSlug(range.state)}/${getCitySlug(range.city)}/${getRangeSlug(range)}/`;
 const safeName = range.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+const tags: string[] = [];
+if (range.indoor_outdoor) tags.push(range.indoor_outdoor.charAt(0).toUpperCase() + range.indoor_outdoor.slice(1));
+if (range.offers_lessons) tags.push('Lessons');
+if (range.offers_rental) tags.push('Rental');
+if (range.has_pro_shop) tags.push('Pro Shop');
+if (range.has_3d_course) tags.push('3D Course');
+if (range.has_leagues) tags.push('Leagues');
+if (range.walk_in) tags.push('Walk-in');
 ---
 
-<article class="listing-card">
-  <h3><a href={href}>{range.name}</a></h3>
-  <p class="address">{range.full_address}</p>
+<article class="bg-white border border-tan rounded-xl shadow-sm p-5 flex flex-col gap-3 hover:shadow-md hover:border-forest/30 transition-all">
+  <div class="flex items-start justify-between gap-3">
+    <h3 class="font-display text-lg font-semibold leading-snug">
+      <a href={href} class="text-forest hover:text-amber transition-colors">{range.name}</a>
+    </h3>
+    {range.google_rating && (
+      <div class="flex items-center gap-1 shrink-0 mt-0.5">
+        <span class="text-amber text-sm">★</span>
+        <span class="text-sm font-semibold text-ink">{range.google_rating}</span>
+        {range.review_count && <span class="text-xs text-stone">({range.review_count})</span>}
+      </div>
+    )}
+  </div>
 
-  {range.google_rating && (
-    <p class="rating">
-      ★ {range.google_rating}
-      {range.review_count && <span>({range.review_count} reviews)</span>}
-    </p>
+  <p class="text-sm text-stone leading-relaxed">{range.full_address}</p>
+
+  {tags.length > 0 && (
+    <ul class="flex flex-wrap gap-1.5">
+      {tags.map(tag => (
+        <li class="bg-forest text-white text-xs px-2.5 py-0.5 rounded-full font-medium">{tag}</li>
+      ))}
+    </ul>
   )}
 
-  <ul class="tags">
-    {range.indoor_outdoor && <li>{range.indoor_outdoor}</li>}
-    {range.offers_lessons && <li>Lessons</li>}
-    {range.offers_rental && <li>Rental</li>}
-    {range.has_pro_shop && <li>Pro Shop</li>}
-    {range.has_3d_course && <li>3D Course</li>}
-    {range.has_leagues && <li>Leagues</li>}
-    {range.walk_in && <li>Walk-in</li>}
-  </ul>
-
-  <div class="actions">
+  <div class="flex gap-3 flex-wrap mt-auto pt-3 border-t border-tan">
     {range.phone && (
       <a
         href={`tel:${range.phone}`}
-        class="phone-link"
+        class="bg-amber text-white text-sm px-4 py-1.5 rounded-lg font-semibold hover:bg-amber-dark transition-colors"
         onclick={`if(window.gtag){gtag('event','phone_click',{business_name:'${safeName}',phone:'${range.phone}'})}`}
       >
-        {range.phone}
+        📞 {range.phone}
       </a>
     )}
-
     {range.website && (
-      <BusinessLink href={range.website} businessName={range.name} class="website-link">
+      <BusinessLink href={range.website} businessName={range.name} class="text-forest text-sm font-semibold hover:text-amber transition-colors self-center">
         Visit Website →
       </BusinessLink>
     )}
