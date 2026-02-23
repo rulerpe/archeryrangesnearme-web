@@ -60,92 +60,177 @@ const safeAddress = range.full_address.replace(/\\/g, '\\\\').replace(/'/g, "\\'
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} />
 
-  <Breadcrumbs crumbs={[
-    { label: range.state, href: `/archery-ranges/${stateSlug}/` },
-    { label: range.city, href: `/archery-ranges/${stateSlug}/${citySlug}/` },
-    { label: range.name },
-  ]} />
+  <div class="max-w-3xl">
+    <Breadcrumbs crumbs={[
+      { label: range.state, href: `/archery-ranges/${stateSlug}/` },
+      { label: range.city, href: `/archery-ranges/${stateSlug}/${citySlug}/` },
+      { label: range.name },
+    ]} />
 
-  <h1>{range.name}</h1>
-  <p>{range.full_address}</p>
+    <h1 class="font-display text-4xl sm:text-5xl font-bold text-ink mb-2 leading-tight">
+      {range.name}
+    </h1>
+    <p class="text-stone mb-2">{range.full_address}</p>
 
-  {range.google_rating && (
-    <p>★ {range.google_rating} &middot; {range.review_count} reviews</p>
-  )}
-
-  <div class="contact">
-    {range.phone && (
-      <a
-        href={`tel:${range.phone}`}
-        onclick={`if(window.gtag){gtag('event','phone_click',{business_name:'${safeName}',phone:'${range.phone}'})}`}
-      >
-        {range.phone}
-      </a>
+    {range.google_rating && (
+      <p class="text-amber font-semibold mb-6">
+        ★ {range.google_rating}
+        {range.review_count && <span class="text-stone font-normal text-sm"> · {range.review_count} reviews</span>}
+      </p>
     )}
-    {range.website && (
-      <BusinessLink href={range.website} businessName={range.name}>
-        Visit Website →
-      </BusinessLink>
-    )}
-    {range.latitude && range.longitude && (
-      <a
-        href={`https://www.google.com/maps/search/?api=1&query=${range.latitude},${range.longitude}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        onclick={`if(window.gtag){gtag('event','directions_click',{business_name:'${safeName}',destination:'${safeAddress}'})}`}
-      >
-        Get Directions →
-      </a>
-    )}
-  </div>
 
-  <section>
-    <h2>Facility</h2>
-    <ul>
-      {range.indoor_outdoor && <li>Type: {range.indoor_outdoor}</li>}
-      {range.num_lanes && <li>Lanes: {range.num_lanes}</li>}
-      {range.max_distance_yards && <li>Max distance: {range.max_distance_yards} yards</li>}
-      {range.wheelchair_accessible && <li>Wheelchair accessible</li>}
-      {range.walk_in && <li>Walk-ins welcome</li>}
-      {range.reservation_required && <li>Reservation required</li>}
-    </ul>
-  </section>
+    <div class="flex gap-3 flex-wrap mb-12">
+      {range.phone && (
+        <a
+          href={`tel:${range.phone}`}
+          class="bg-amber text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-amber-dark transition-colors text-sm"
+          onclick={`if(window.gtag){gtag('event','phone_click',{business_name:'${safeName}',phone:'${range.phone}'})}`}
+        >
+          📞 {range.phone}
+        </a>
+      )}
+      {range.website && (
+        <BusinessLink
+          href={range.website}
+          businessName={range.name}
+          class="bg-forest text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-forest-dark transition-colors text-sm"
+        >
+          🌐 Visit Website →
+        </BusinessLink>
+      )}
+      {range.latitude && range.longitude && (
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${range.latitude},${range.longitude}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="border-2 border-forest text-forest px-5 py-2.5 rounded-xl font-semibold hover:bg-forest hover:text-white transition-colors text-sm"
+          onclick={`if(window.gtag){gtag('event','directions_click',{business_name:'${safeName}',destination:'${safeAddress}'})}`}
+        >
+          📍 Get Directions →
+        </a>
+      )}
+    </div>
 
-  <section>
-    <h2>Services</h2>
-    <ul>
-      {range.offers_lessons && <li>Lessons available</li>}
-      {range.offers_rental && <li>Equipment rental</li>}
-      {range.offers_repair && <li>Bow repair</li>}
-      {range.has_pro_shop && <li>Pro shop</li>}
-      {range.has_leagues && <li>Leagues</li>}
-      {range.has_tournaments && <li>Tournaments</li>}
-      {range.has_3d_course && <li>3D course</li>}
-      {range.has_birthday_parties && <li>Birthday parties</li>}
-    </ul>
-  </section>
-
-  {(range.range_fee || range.lesson_pricing || range.rental_pricing || range.membership_pricing) && (
-    <section>
-      <h2>Pricing</h2>
-      {range.range_fee && <p>Range fee: {range.range_fee}</p>}
-      {range.lesson_pricing && <p>Lessons: {range.lesson_pricing}</p>}
-      {range.rental_pricing && <p>Rental: {range.rental_pricing}</p>}
-      {range.membership_pricing && <p>Membership: {range.membership_pricing}</p>}
-    </section>
-  )}
-
-  {Object.keys(hours).length > 0 && (
-    <section>
-      <h2>Hours</h2>
-      <ul>
-        {Object.entries(hours).map(([day, times]) => (
-          <li>{day}: {Array.isArray(times) ? times.join(', ') : times}</li>
-        ))}
+    <section class="mb-10">
+      <h2 class="font-display text-2xl font-semibold text-amber border-b border-tan pb-2 mb-5">Facility</h2>
+      <ul class="space-y-2">
+        {range.indoor_outdoor && (
+          <li class="flex gap-3 text-sm">
+            <span class="text-stone w-36 shrink-0">Type</span>
+            <span class="text-ink capitalize">{range.indoor_outdoor}</span>
+          </li>
+        )}
+        {range.num_lanes && (
+          <li class="flex gap-3 text-sm">
+            <span class="text-stone w-36 shrink-0">Lanes</span>
+            <span class="text-ink">{range.num_lanes}</span>
+          </li>
+        )}
+        {range.max_distance_yards && (
+          <li class="flex gap-3 text-sm">
+            <span class="text-stone w-36 shrink-0">Max distance</span>
+            <span class="text-ink">{range.max_distance_yards} yards</span>
+          </li>
+        )}
+        {range.wheelchair_accessible && (
+          <li class="flex gap-3 text-sm">
+            <span class="text-stone w-36 shrink-0">Accessibility</span>
+            <span class="text-ink">Wheelchair accessible</span>
+          </li>
+        )}
+        {range.walk_in && (
+          <li class="flex gap-3 text-sm">
+            <span class="text-stone w-36 shrink-0">Walk-in</span>
+            <span class="text-ink">Walk-ins welcome</span>
+          </li>
+        )}
+        {range.reservation_required && (
+          <li class="flex gap-3 text-sm">
+            <span class="text-stone w-36 shrink-0">Reservation</span>
+            <span class="text-ink">Required</span>
+          </li>
+        )}
       </ul>
     </section>
-  )}
 
-  {range.age_restrictions && <p>Age requirements: {range.age_restrictions}</p>}
-  {range.whats_included && <p>What&apos;s included: {range.whats_included}</p>}
+    <section class="mb-10">
+      <h2 class="font-display text-2xl font-semibold text-amber border-b border-tan pb-2 mb-5">Services</h2>
+      <ul class="flex flex-wrap gap-2">
+        {range.offers_lessons && <li class="bg-cream-dark border border-tan text-ink text-sm px-3 py-1.5 rounded-lg">Lessons</li>}
+        {range.offers_rental && <li class="bg-cream-dark border border-tan text-ink text-sm px-3 py-1.5 rounded-lg">Equipment Rental</li>}
+        {range.offers_repair && <li class="bg-cream-dark border border-tan text-ink text-sm px-3 py-1.5 rounded-lg">Bow Repair</li>}
+        {range.has_pro_shop && <li class="bg-cream-dark border border-tan text-ink text-sm px-3 py-1.5 rounded-lg">Pro Shop</li>}
+        {range.has_leagues && <li class="bg-cream-dark border border-tan text-ink text-sm px-3 py-1.5 rounded-lg">Leagues</li>}
+        {range.has_tournaments && <li class="bg-cream-dark border border-tan text-ink text-sm px-3 py-1.5 rounded-lg">Tournaments</li>}
+        {range.has_3d_course && <li class="bg-cream-dark border border-tan text-ink text-sm px-3 py-1.5 rounded-lg">3D Course</li>}
+        {range.has_birthday_parties && <li class="bg-cream-dark border border-tan text-ink text-sm px-3 py-1.5 rounded-lg">Birthday Parties</li>}
+      </ul>
+    </section>
+
+    {(range.range_fee || range.lesson_pricing || range.rental_pricing || range.membership_pricing) && (
+      <section class="mb-10">
+        <h2 class="font-display text-2xl font-semibold text-amber border-b border-tan pb-2 mb-5">Pricing</h2>
+        <ul class="space-y-2">
+          {range.range_fee && (
+            <li class="flex gap-3 text-sm">
+              <span class="text-stone w-36 shrink-0">Range fee</span>
+              <span class="text-ink">{range.range_fee}</span>
+            </li>
+          )}
+          {range.lesson_pricing && (
+            <li class="flex gap-3 text-sm">
+              <span class="text-stone w-36 shrink-0">Lessons</span>
+              <span class="text-ink">{range.lesson_pricing}</span>
+            </li>
+          )}
+          {range.rental_pricing && (
+            <li class="flex gap-3 text-sm">
+              <span class="text-stone w-36 shrink-0">Rental</span>
+              <span class="text-ink">{range.rental_pricing}</span>
+            </li>
+          )}
+          {range.membership_pricing && (
+            <li class="flex gap-3 text-sm">
+              <span class="text-stone w-36 shrink-0">Membership</span>
+              <span class="text-ink">{range.membership_pricing}</span>
+            </li>
+          )}
+        </ul>
+      </section>
+    )}
+
+    {Object.keys(hours).length > 0 && (
+      <section class="mb-10">
+        <h2 class="font-display text-2xl font-semibold text-amber border-b border-tan pb-2 mb-5">Hours</h2>
+        <ul class="space-y-2">
+          {Object.entries(hours).map(([day, times]) => (
+            <li class="flex gap-3 text-sm">
+              <span class="text-stone w-36 shrink-0">{day}</span>
+              <span class="text-ink">{Array.isArray(times) ? times.join(', ') : times}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {(range.age_restrictions || range.whats_included) && (
+      <section class="mb-10">
+        <h2 class="font-display text-2xl font-semibold text-amber border-b border-tan pb-2 mb-5">Additional Info</h2>
+        <ul class="space-y-2">
+          {range.age_restrictions && (
+            <li class="flex gap-3 text-sm">
+              <span class="text-stone w-36 shrink-0">Age requirements</span>
+              <span class="text-ink">{range.age_restrictions}</span>
+            </li>
+          )}
+          {range.whats_included && (
+            <li class="flex gap-3 text-sm">
+              <span class="text-stone w-36 shrink-0">What's included</span>
+              <span class="text-ink">{range.whats_included}</span>
+            </li>
+          )}
+        </ul>
+      </section>
+    )}
+  </div>
 </BaseLayout>
