@@ -46,7 +46,7 @@ const client = new S3Client({
   },
 });
 
-console.log(`Downloading ${R2_BUCKET_NAME}/${R2_OBJECT_KEY}...`);
+console.log(`Downloading bucket="${R2_BUCKET_NAME}" key="${R2_OBJECT_KEY}" endpoint="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"`);
 mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
 
 const { Body } = await client.send(
