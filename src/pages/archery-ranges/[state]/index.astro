@@ -41,25 +41,36 @@ const schema = {
 
   <Breadcrumbs crumbs={[{ label: stateName }]} />
 
-  <h1>Archery Ranges in {stateName}</h1>
-  <p>{ranges.length} ranges found.</p>
+  <h1 class="font-display text-4xl sm:text-5xl font-bold text-ink mb-3">
+    Archery Ranges in {stateName}
+  </h1>
+  <p class="text-stone text-lg mb-10">{ranges.length} ranges found.</p>
 
-  <h2>Browse by City</h2>
-  <ul>
+  <h2 class="font-display text-2xl font-semibold text-ink mb-5">Browse by City</h2>
+  <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-14">
     {cities.map(c => (
       <li>
-        <a href={`/archery-ranges/${stateSlug}/${c.slug}/`}>
-          {c.name} ({c.count})
+        <a
+          href={`/archery-ranges/${stateSlug}/${c.slug}/`}
+          class="group block bg-cream-dark border border-tan rounded-xl px-4 py-3 hover:border-forest hover:shadow-sm transition-all"
+        >
+          <span class="font-medium text-forest text-sm block">{c.name}</span>
+          <span class="text-xs text-stone mt-0.5 block">{c.count} range{c.count !== 1 ? 's' : ''} →</span>
         </a>
       </li>
     ))}
   </ul>
 
-  <h2>Filter by Type</h2>
-  <ul>
+  <h2 class="font-display text-2xl font-semibold text-ink mb-4">Filter by Type</h2>
+  <ul class="flex flex-wrap gap-2">
     {FEATURES.map(f => (
       <li>
-        <a href={`/archery-ranges/${stateSlug}/${f.slug}/`}>{f.label}</a>
+        <a
+          href={`/archery-ranges/${stateSlug}/${f.slug}/`}
+          class="inline-block bg-cream-dark border border-tan text-forest text-sm px-4 py-2 rounded-full hover:bg-forest hover:text-white hover:border-forest transition-all font-medium"
+        >
+          {f.label}
+        </a>
       </li>
     ))}
   </ul>
