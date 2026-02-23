@@ -10,12 +10,16 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.6",
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/sitemap": "^3.7.0",
     "@aws-sdk/client-s3": "^3.995.0",
+    "@tailwindcss/vite": "^4.2.0",
     "astro": "^5.17.1",
     "papaparse": "^5.5.3",
-    "tslib": "^2.8.1"
+    "tailwindcss": "^4.2.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@types/papaparse": "^5.5.2",
