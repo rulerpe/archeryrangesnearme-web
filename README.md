@@ -1,6 +1,6 @@
 # Archery Ranges Near Me — Web
 
-Static directory site listing ~2,900 archery ranges across the US. Built with Astro, hosted on Cloudflare Pages.
+Static directory site listing ~2,900 archery ranges across the US. Built with Astro, hosted on Cloudflare Pages
 
 ## Stack
 
