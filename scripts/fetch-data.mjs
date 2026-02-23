@@ -32,6 +32,9 @@ const {
   R2_OBJECT_KEY = 'enriched_final.csv',
 } = process.env;
 
+// Debug: dump all env var NAMES available in this build
+console.log('[fetch-data] All env var keys:', Object.keys(process.env).sort().join(', '));
+
 // Debug: show which R2 vars are present (values masked for security)
 console.log('[fetch-data] Env var check:');
 console.log('  R2_ACCOUNT_ID    :', R2_ACCOUNT_ID    ? `set (${R2_ACCOUNT_ID.length} chars)` : 'MISSING');
