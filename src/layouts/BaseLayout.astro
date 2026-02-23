@@ -1,0 +1,51 @@
+---
+import SEOHead from '../components/SEOHead.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+}
+const {
+  title,
+  description,
+  canonicalUrl = Astro.url.href,
+  ogImage,
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <SEOHead
+      title={title}
+      description={description}
+      canonicalUrl={canonicalUrl}
+      ogImage={ogImage}
+    />
+  </head>
+  <body>
+    <header>
+      <a href="/" class="logo">Archery Ranges Near Me</a>
+      <nav>
+        <a href="/archery-ranges/indoor/">Indoor</a>
+        <a href="/archery-ranges/with-lessons/">Lessons</a>
+        <a href="/archery-ranges/with-3d-course/">3D Courses</a>
+        <a href="/archery-ranges/with-pro-shop/">Pro Shops</a>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <p>&copy; {new Date().getFullYear()} Archery Ranges Near Me</p>
+    </footer>
+  </body>
+</html>

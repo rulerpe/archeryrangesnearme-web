@@ -1,0 +1,39 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  canonicalUrl: string;
+  ogImage?: string;
+}
+const { title, description, canonicalUrl, ogImage = '/og-default.png' } = Astro.props;
+const GA_ID = import.meta.env.PUBLIC_GA_ID;
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+
+<!-- GA4 via Partytown (only injected when GA_ID is set) -->
+{GA_ID && (
+  <>
+    <script type="text/partytown" async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
+    <script type="text/partytown" define:vars={{ GA_ID }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', GA_ID);
+    </script>
+  </>
+)}

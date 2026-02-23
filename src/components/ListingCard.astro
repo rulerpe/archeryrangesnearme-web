@@ -1,0 +1,52 @@
+---
+import BusinessLink from './BusinessLink.astro';
+import type { Range } from '../data/types';
+import { getRangeSlug, getStateSlug, getCitySlug } from '../data/ranges';
+
+interface Props {
+  range: Range;
+}
+const { range } = Astro.props;
+const href = `/archery-ranges/${getStateSlug(range.state)}/${getCitySlug(range.city)}/${getRangeSlug(range)}/`;
+const safeName = range.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+---
+
+<article class="listing-card">
+  <h3><a href={href}>{range.name}</a></h3>
+  <p class="address">{range.full_address}</p>
+
+  {range.google_rating && (
+    <p class="rating">
+      ★ {range.google_rating}
+      {range.review_count && <span>({range.review_count} reviews)</span>}
+    </p>
+  )}
+
+  <ul class="tags">
+    {range.indoor_outdoor && <li>{range.indoor_outdoor}</li>}
+    {range.offers_lessons && <li>Lessons</li>}
+    {range.offers_rental && <li>Rental</li>}
+    {range.has_pro_shop && <li>Pro Shop</li>}
+    {range.has_3d_course && <li>3D Course</li>}
+    {range.has_leagues && <li>Leagues</li>}
+    {range.walk_in && <li>Walk-in</li>}
+  </ul>
+
+  <div class="actions">
+    {range.phone && (
+      <a
+        href={`tel:${range.phone}`}
+        class="phone-link"
+        onclick={`if(window.gtag){gtag('event','phone_click',{business_name:'${safeName}',phone:'${range.phone}'})}`}
+      >
+        {range.phone}
+      </a>
+    )}
+
+    {range.website && (
+      <BusinessLink href={range.website} businessName={range.name} class="website-link">
+        Visit Website →
+      </BusinessLink>
+    )}
+  </div>
+</article>

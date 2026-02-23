@@ -1,0 +1,22 @@
+---
+interface Props {
+  href: string;
+  businessName: string;
+  class?: string;
+}
+const { href, businessName, class: className = '' } = Astro.props;
+// Escape single quotes for inline JS string safety
+const safeName = businessName.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+const safeHref = href.replace(/'/g, "\\'");
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class={className}
+  data-business={businessName}
+  onclick={`if(window.gtag){gtag('event','outbound_click',{link_url:'${safeHref}',business_name:'${safeName}'})}`}
+>
+  <slot />
+</a>
