@@ -1,5 +1,6 @@
 ---
 import SEOHead from '../components/SEOHead.astro';
+import '../styles/global.css';
 
 interface Props {
   title: string;
@@ -22,6 +23,12 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap"
+      rel="stylesheet"
+    />
     <SEOHead
       title={title}
       description={description}
@@ -29,23 +36,31 @@ const {
       ogImage={ogImage}
     />
   </head>
-  <body>
-    <header>
-      <a href="/" class="logo">Archery Ranges Near Me</a>
-      <nav>
-        <a href="/archery-ranges/indoor/">Indoor</a>
-        <a href="/archery-ranges/with-lessons/">Lessons</a>
-        <a href="/archery-ranges/with-3d-course/">3D Courses</a>
-        <a href="/archery-ranges/with-pro-shop/">Pro Shops</a>
-      </nav>
+  <body class="bg-cream font-body text-ink min-h-screen flex flex-col">
+    <header class="bg-forest sticky top-0 z-50 shadow-md">
+      <div class="max-w-screen-xl mx-auto px-4 sm:px-8 flex items-center justify-between h-16">
+        <a href="/" class="font-display text-white text-xl font-bold tracking-wide hover:text-amber transition-colors whitespace-nowrap">
+          🏹 Archery Ranges Near Me
+        </a>
+        <nav class="flex gap-4 sm:gap-6 text-sm">
+          <a href="/archery-ranges/indoor/" class="text-white/80 hover:text-amber transition-colors">Indoor</a>
+          <a href="/archery-ranges/with-lessons/" class="text-white/80 hover:text-amber transition-colors">Lessons</a>
+          <a href="/archery-ranges/with-3d-course/" class="text-white/80 hover:text-amber transition-colors hidden sm:inline">3D Courses</a>
+          <a href="/archery-ranges/with-pro-shop/" class="text-white/80 hover:text-amber transition-colors hidden sm:inline">Pro Shops</a>
+        </nav>
+      </div>
     </header>
 
-    <main>
-      <slot />
+    <main class="flex-1">
+      <div class="max-w-screen-xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
+        <slot />
+      </div>
     </main>
 
-    <footer>
-      <p>&copy; {new Date().getFullYear()} Archery Ranges Near Me</p>
+    <footer class="bg-forest text-white mt-16">
+      <div class="max-w-screen-xl mx-auto px-4 sm:px-8 py-8">
+        <p class="text-sm text-white/60">&copy; {new Date().getFullYear()} Archery Ranges Near Me. All rights reserved.</p>
+      </div>
     </footer>
   </body>
 </html>
