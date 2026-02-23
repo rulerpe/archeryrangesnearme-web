@@ -1,43 +1,83 @@
-# Astro Starter Kit: Minimal
+# Archery Ranges Near Me — Web
 
-```sh
-npm create astro@latest -- --template minimal
+Static directory site listing ~2,900 archery ranges across the US. Built with Astro, hosted on Cloudflare Pages.
+
+## Stack
+
+- **Astro** — static site generator, zero JS by default
+- **Cloudflare Pages** — hosting and CDN
+- **Cloudflare R2** — private storage for the source CSV
+
+## How it works
+
+At build time, the site downloads `enriched_final.csv` from a private R2 bucket and generates ~5,600 static HTML pages. No database, no server.
+
+## Pages
+
+| URL pattern | Example |
+|---|---|
+| `/` | Homepage — state index |
+| `/archery-ranges/texas/` | All ranges in Texas |
+| `/archery-ranges/texas/austin/` | All ranges in Austin, TX |
+| `/archery-ranges/texas/austin/range-name/` | Individual listing |
+| `/archery-ranges/indoor/` | All indoor ranges (US) |
+| `/archery-ranges/texas/indoor/` | Indoor ranges in Texas |
+
+Feature filters: `indoor` · `outdoor` · `with-lessons` · `with-rental` · `with-pro-shop` · `with-3d-course` · `with-leagues` · `with-tournaments` · `walk-in`
+
+## Local development
+
+**1. Copy `.env.example` to `.env` and fill in R2 credentials:**
+
+```
+PUBLIC_GA_ID=G-XXXXXXXXXX
+R2_ACCOUNT_ID=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET_NAME=archeryrangesnearme-data
+R2_OBJECT_KEY=enriched_final.csv
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+**2. Fetch the CSV and start dev server:**
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+node scripts/fetch-data.mjs
+npm run dev
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Or copy `enriched_final.csv` directly to `src/data/ranges.csv` and run `npm run dev`.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Build
 
-Any static assets, like images, can be placed in the `public/` directory.
+```bash
+npm run build   # fetches CSV from R2, then runs astro build
+```
 
-## 🧞 Commands
+Output goes to `dist/`. The CSV is gitignored and never committed.
 
-All commands are run from the root of the project, from a terminal:
+## Tests
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```bash
+npm test
+```
 
-## 👀 Want to learn more?
+Unit tests cover the data layer (CSV parsing, slug generation), feature filters, and SEO utilities.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Deployment
+
+Hosted on Cloudflare Pages. Every push to `main` triggers a build.
+
+Cloudflare Pages environment variables needed:
+
+| Variable | Type |
+|---|---|
+| `PUBLIC_GA_ID` | Plain text |
+| `R2_BUCKET_NAME` | Plain text |
+| `R2_OBJECT_KEY` | Plain text |
+| `R2_ACCOUNT_ID` | Secret |
+| `R2_ACCESS_KEY_ID` | Secret |
+| `R2_SECRET_ACCESS_KEY` | Secret |
+
+## Updating data
+
+When the data pipeline produces a new `enriched_final.csv`, upload it to R2 (see the data pipeline repo), then trigger a redeploy on Cloudflare Pages.
