@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import { getRangesByState, getCitySlug } from '../../../data/ranges';
+import { FEATURES } from '../../../data/filters';
+import { makeTitle, makeDescription } from '../../../utils/seo';
+
+export async function getStaticPaths() {
+  const byState = getRangesByState();
+  return [...byState.entries()].map(([stateSlug, ranges]) => ({
+    params: { state: stateSlug },
+    props: { stateName: ranges[0].state, ranges },
+  }));
+}
+
+const { state: stateSlug } = Astro.params;
+const { stateName, ranges } = Astro.props;
+
+const cityCounts = new Map<string, { name: string; slug: string; count: number }>();
+for (const r of ranges) {
+  const slug = getCitySlug(r.city);
+  if (!cityCounts.has(slug)) cityCounts.set(slug, { name: r.city, slug, count: 0 });
+  cityCounts.get(slug)!.count++;
+}
+const cities = [...cityCounts.values()].sort((a, b) => b.count - a.count);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: makeTitle('state', { state: stateName, count: ranges.length }),
+  description: makeDescription('state', { state: stateName, count: ranges.length }),
+  url: new URL(`/archery-ranges/${stateSlug}/`, Astro.site).toString(),
+};
+---
+
+<BaseLayout
+  title={makeTitle('state', { state: stateName, count: ranges.length })}
+  description={makeDescription('state', { state: stateName, count: ranges.length })}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <Breadcrumbs crumbs={[{ label: stateName }]} />
+
+  <h1>Archery Ranges in {stateName}</h1>
+  <p>{ranges.length} ranges found.</p>
+
+  <h2>Browse by City</h2>
+  <ul>
+    {cities.map(c => (
+      <li>
+        <a href={`/archery-ranges/${stateSlug}/${c.slug}/`}>
+          {c.name} ({c.count})
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <h2>Filter by Type</h2>
+  <ul>
+    {FEATURES.map(f => (
+      <li>
+        <a href={`/archery-ranges/${stateSlug}/${f.slug}/`}>{f.label}</a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

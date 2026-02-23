@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
+import ListingCard from '../../../../components/ListingCard.astro';
+import { getRangesByState, getCitySlug } from '../../../../data/ranges';
+import { makeTitle, makeDescription } from '../../../../utils/seo';
+
+export async function getStaticPaths() {
+  const byState = getRangesByState();
+  const paths = [];
+  for (const [stateSlug, stateRanges] of byState.entries()) {
+    const byCity = new Map<string, typeof stateRanges>();
+    for (const r of stateRanges) {
+      const slug = getCitySlug(r.city);
+      if (!byCity.has(slug)) byCity.set(slug, []);
+      byCity.get(slug)!.push(r);
+    }
+    for (const [citySlug, cityRanges] of byCity.entries()) {
+      paths.push({
+        params: { state: stateSlug, city: citySlug },
+        props: { stateName: cityRanges[0].state, cityName: cityRanges[0].city, ranges: cityRanges },
+      });
+    }
+  }
+  return paths;
+}
+
+const { state: stateSlug, city: citySlug } = Astro.params;
+const { stateName, cityName, ranges } = Astro.props;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: makeTitle('city', { city: cityName, state: stateName, count: ranges.length }),
+  description: makeDescription('city', { city: cityName, state: stateName, count: ranges.length }),
+};
+---
+
+<BaseLayout
+  title={makeTitle('city', { city: cityName, state: stateName, count: ranges.length })}
+  description={makeDescription('city', { city: cityName, state: stateName, count: ranges.length })}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <Breadcrumbs crumbs={[
+    { label: stateName, href: `/archery-ranges/${stateSlug}/` },
+    { label: cityName },
+  ]} />
+
+  <h1>Archery Ranges in {cityName}, {stateName}</h1>
+  <p>{ranges.length} range{ranges.length !== 1 ? 's' : ''} found.</p>
+
+  {ranges.map(r => <ListingCard range={r} />)}
+</BaseLayout>

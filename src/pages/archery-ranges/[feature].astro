@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ListingCard from '../../components/ListingCard.astro';
+import { parseRanges } from '../../data/ranges';
+import { FEATURES, filterByFeature, getFeatureLabel } from '../../data/filters';
+import { makeTitle, makeDescription } from '../../utils/seo';
+
+export async function getStaticPaths() {
+  return FEATURES.map(f => ({
+    params: { feature: f.slug },
+    props: { featureSlug: f.slug },
+  }));
+}
+
+const { feature: featureSlug } = Astro.params;
+const { featureSlug: _slug } = Astro.props;
+const ranges = filterByFeature(parseRanges(), featureSlug);
+const featureLabel = getFeatureLabel(featureSlug);
+---
+
+<BaseLayout
+  title={makeTitle('feature', { featureLabel })}
+  description={makeDescription('feature', { featureLabel })}
+>
+  <Breadcrumbs crumbs={[{ label: featureLabel }]} />
+
+  <h1>{featureLabel} Archery Ranges</h1>
+  <p>{ranges.length} ranges nationwide.</p>
+
+  {ranges.map(r => <ListingCard range={r} />)}
+</BaseLayout>

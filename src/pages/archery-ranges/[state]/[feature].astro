@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ListingCard from '../../../components/ListingCard.astro';
+import { getRangesByState } from '../../../data/ranges';
+import { FEATURES, filterByFeature, getFeatureLabel } from '../../../data/filters';
+import { makeTitle, makeDescription } from '../../../utils/seo';
+
+export async function getStaticPaths() {
+  const byState = getRangesByState();
+  const paths = [];
+  for (const [stateSlug, stateRanges] of byState.entries()) {
+    for (const feature of FEATURES) {
+      const filtered = filterByFeature(stateRanges, feature.slug);
+      if (filtered.length === 0) continue;
+      paths.push({
+        params: { state: stateSlug, feature: feature.slug },
+        props: { stateName: stateRanges[0].state, ranges: filtered, featureSlug: feature.slug },
+      });
+    }
+  }
+  return paths;
+}
+
+const { state: stateSlug, feature: featureSlug } = Astro.params;
+const { stateName, ranges } = Astro.props;
+const featureLabel = getFeatureLabel(featureSlug);
+---
+
+<BaseLayout
+  title={makeTitle('feature', { featureLabel, state: stateName })}
+  description={makeDescription('feature', { featureLabel, state: stateName })}
+>
+  <Breadcrumbs crumbs={[
+    { label: stateName, href: `/archery-ranges/${stateSlug}/` },
+    { label: featureLabel },
+  ]} />
+
+  <h1>{featureLabel} Archery Ranges in {stateName}</h1>
+  <p>{ranges.length} ranges found.</p>
+
+  {ranges.map(r => <ListingCard range={r} />)}
+</BaseLayout>

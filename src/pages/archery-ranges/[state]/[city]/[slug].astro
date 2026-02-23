@@ -1,0 +1,151 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
+import BusinessLink from '../../../../components/BusinessLink.astro';
+import { parseRanges, getRangeSlug, getStateSlug, getCitySlug } from '../../../../data/ranges';
+import { makeTitle, makeDescription } from '../../../../utils/seo';
+import type { Range } from '../../../../data/types';
+
+export async function getStaticPaths() {
+  const ranges = parseRanges();
+  return ranges.map(r => ({
+    params: {
+      state: getStateSlug(r.state),
+      city: getCitySlug(r.city),
+      slug: getRangeSlug(r),
+    },
+    props: { range: r },
+  }));
+}
+
+const { state: stateSlug, city: citySlug } = Astro.params;
+const { range } = Astro.props as { range: Range };
+
+let hours: Record<string, string | string[]> = {};
+try { hours = JSON.parse(range.working_hours); } catch {}
+
+const schema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'SportsActivityLocation',
+  name: range.name,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: range.full_address,
+    addressLocality: range.city,
+    addressRegion: range.state,
+    postalCode: range.zip_code,
+    addressCountry: 'US',
+  },
+};
+if (range.phone) schema.telephone = range.phone;
+if (range.website) schema.url = range.website;
+if (range.latitude && range.longitude) {
+  schema.geo = { '@type': 'GeoCoordinates', latitude: range.latitude, longitude: range.longitude };
+}
+if (range.google_rating) {
+  schema.aggregateRating = {
+    '@type': 'AggregateRating',
+    ratingValue: range.google_rating,
+    reviewCount: range.review_count ?? 1,
+  };
+}
+
+const safeName = range.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+const safeAddress = range.full_address.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+---
+
+<BaseLayout
+  title={makeTitle('listing', { name: range.name, city: range.city, state: range.state })}
+  description={makeDescription('listing', { name: range.name, city: range.city, state: range.state, indoorOutdoor: range.indoor_outdoor })}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <Breadcrumbs crumbs={[
+    { label: range.state, href: `/archery-ranges/${stateSlug}/` },
+    { label: range.city, href: `/archery-ranges/${stateSlug}/${citySlug}/` },
+    { label: range.name },
+  ]} />
+
+  <h1>{range.name}</h1>
+  <p>{range.full_address}</p>
+
+  {range.google_rating && (
+    <p>★ {range.google_rating} &middot; {range.review_count} reviews</p>
+  )}
+
+  <div class="contact">
+    {range.phone && (
+      <a
+        href={`tel:${range.phone}`}
+        onclick={`if(window.gtag){gtag('event','phone_click',{business_name:'${safeName}',phone:'${range.phone}'})}`}
+      >
+        {range.phone}
+      </a>
+    )}
+    {range.website && (
+      <BusinessLink href={range.website} businessName={range.name}>
+        Visit Website →
+      </BusinessLink>
+    )}
+    {range.latitude && range.longitude && (
+      <a
+        href={`https://www.google.com/maps/search/?api=1&query=${range.latitude},${range.longitude}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        onclick={`if(window.gtag){gtag('event','directions_click',{business_name:'${safeName}',destination:'${safeAddress}'})}`}
+      >
+        Get Directions →
+      </a>
+    )}
+  </div>
+
+  <section>
+    <h2>Facility</h2>
+    <ul>
+      {range.indoor_outdoor && <li>Type: {range.indoor_outdoor}</li>}
+      {range.num_lanes && <li>Lanes: {range.num_lanes}</li>}
+      {range.max_distance_yards && <li>Max distance: {range.max_distance_yards} yards</li>}
+      {range.wheelchair_accessible && <li>Wheelchair accessible</li>}
+      {range.walk_in && <li>Walk-ins welcome</li>}
+      {range.reservation_required && <li>Reservation required</li>}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Services</h2>
+    <ul>
+      {range.offers_lessons && <li>Lessons available</li>}
+      {range.offers_rental && <li>Equipment rental</li>}
+      {range.offers_repair && <li>Bow repair</li>}
+      {range.has_pro_shop && <li>Pro shop</li>}
+      {range.has_leagues && <li>Leagues</li>}
+      {range.has_tournaments && <li>Tournaments</li>}
+      {range.has_3d_course && <li>3D course</li>}
+      {range.has_birthday_parties && <li>Birthday parties</li>}
+    </ul>
+  </section>
+
+  {(range.range_fee || range.lesson_pricing || range.rental_pricing || range.membership_pricing) && (
+    <section>
+      <h2>Pricing</h2>
+      {range.range_fee && <p>Range fee: {range.range_fee}</p>}
+      {range.lesson_pricing && <p>Lessons: {range.lesson_pricing}</p>}
+      {range.rental_pricing && <p>Rental: {range.rental_pricing}</p>}
+      {range.membership_pricing && <p>Membership: {range.membership_pricing}</p>}
+    </section>
+  )}
+
+  {Object.keys(hours).length > 0 && (
+    <section>
+      <h2>Hours</h2>
+      <ul>
+        {Object.entries(hours).map(([day, times]) => (
+          <li>{day}: {Array.isArray(times) ? times.join(', ') : times}</li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {range.age_restrictions && <p>Age requirements: {range.age_restrictions}</p>}
+  {range.whats_included && <p>What&apos;s included: {range.whats_included}</p>}
+</BaseLayout>

@@ -1,17 +1,47 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { parseRanges, getStateSlug } from '../data/ranges';
+import { makeTitle, makeDescription } from '../utils/seo';
 
+const ranges = parseRanges();
+const stateCounts = new Map<string, { name: string; slug: string; count: number }>();
+
+for (const r of ranges) {
+  const slug = getStateSlug(r.state);
+  if (!stateCounts.has(slug)) {
+    stateCounts.set(slug, { name: r.state, slug, count: 0 });
+  }
+  stateCounts.get(slug)!.count++;
+}
+
+const states = [...stateCounts.values()].sort((a, b) => a.name.localeCompare(b.name));
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Archery Ranges Near Me',
+  url: Astro.site?.toString(),
+  description: makeDescription('home', {}),
+};
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+  title={makeTitle('home', {})}
+  description={makeDescription('home', {})}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <h1>Find Archery Ranges Near You</h1>
+  <p>Browse {ranges.length.toLocaleString()} archery ranges across the US.</p>
+
+  <h2>Browse by State</h2>
+  <ul>
+    {states.map(s => (
+      <li>
+        <a href={`/archery-ranges/${s.slug}/`}>
+          {s.name} <span>({s.count})</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
