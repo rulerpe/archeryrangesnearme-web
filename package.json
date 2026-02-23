@@ -12,6 +12,7 @@
   "dependencies": {
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/sitemap": "^3.7.0",
+    "@aws-sdk/client-s3": "^3.995.0",
     "astro": "^5.17.1",
     "papaparse": "^5.5.3"
   },
