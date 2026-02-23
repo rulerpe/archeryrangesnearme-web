@@ -4,10 +4,23 @@
 // Required env vars: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY
 // Optional env vars: R2_BUCKET_NAME (default: archeryrangesnearme-data), R2_OBJECT_KEY (default: enriched_final.csv)
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import { createWriteStream, mkdirSync } from 'fs';
+import { createWriteStream, mkdirSync, readFileSync, existsSync } from 'fs';
 import { pipeline } from 'stream/promises';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+
+// Load .env for local development (not present on Cloudflare Pages)
+if (existsSync('.env')) {
+  readFileSync('.env', 'utf8').split('\n').forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) return;
+    const eq = trimmed.indexOf('=');
+    if (eq === -1) return;
+    const key = trimmed.slice(0, eq).trim();
+    const val = trimmed.slice(eq + 1).trim();
+    if (key && !(key in process.env)) process.env[key] = val;
+  });
+}
 
 const OUTPUT_PATH = new URL('../src/data/ranges.csv', import.meta.url).pathname;
 
