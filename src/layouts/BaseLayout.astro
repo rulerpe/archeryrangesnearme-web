@@ -26,10 +26,9 @@ const {
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" />
+    <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" /></noscript>
     <SEOHead
       title={title}
       description={description}
@@ -41,7 +40,10 @@ const {
     <header class="bg-forest sticky top-0 z-50 shadow-md">
       <div class="max-w-screen-xl mx-auto px-4 sm:px-8 flex items-center justify-between h-16">
         <a href="/" class="flex items-center gap-2 hover:opacity-90 transition-opacity">
-          <img src="/logo.png" alt="Archery Ranges Near Me" class="h-8 w-8 sm:h-10 sm:w-10 object-contain" />
+          <picture>
+            <source srcset="/logo.webp" type="image/webp" />
+            <img src="/logo-80.png" alt="Archery Ranges Near Me" class="h-8 w-8 sm:h-10 sm:w-10 object-contain" />
+          </picture>
           <span class="font-display text-white text-base sm:text-xl font-bold tracking-wide">Archery Ranges Near Me</span>
         </a>
         <nav class="flex gap-4 sm:gap-6 text-sm items-center">
@@ -49,7 +51,7 @@ const {
           <a href="/archery-ranges/with-lessons/" class="text-white/80 hover:text-amber transition-colors hidden sm:inline">Lessons</a>
           <a href="/archery-ranges/with-3d-course/" class="text-white/80 hover:text-amber transition-colors hidden sm:inline">3D Courses</a>
           <a href="/archery-ranges/with-pro-shop/" class="text-white/80 hover:text-amber transition-colors hidden sm:inline">Pro Shops</a>
-          <a href="/contact/" class="border border-amber/70 text-amber text-sm px-3 py-1 rounded-full hover:bg-amber hover:text-white hover:border-amber transition-all font-medium whitespace-nowrap">
+          <a href="/contact/" class="border border-amber text-white text-sm px-3 py-1 rounded-full hover:bg-amber transition-all font-medium whitespace-nowrap">
             Contact
           </a>
         </nav>
