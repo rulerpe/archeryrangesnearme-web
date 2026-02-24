@@ -21,7 +21,8 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,8 +40,9 @@ const {
   <body class="bg-cream font-body text-ink min-h-screen flex flex-col">
     <header class="bg-forest sticky top-0 z-50 shadow-md">
       <div class="max-w-screen-xl mx-auto px-4 sm:px-8 flex items-center justify-between h-16">
-        <a href="/" class="font-display text-white text-base sm:text-xl font-bold tracking-wide hover:text-amber transition-colors whitespace-nowrap">
-          🏹 Archery Ranges Near Me
+        <a href="/" class="flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <img src="/logo.png" alt="Archery Ranges Near Me" class="h-8 w-8 sm:h-10 sm:w-10 object-contain" />
+          <span class="font-display text-white text-base sm:text-xl font-bold tracking-wide">Archery Ranges Near Me</span>
         </a>
         <nav class="flex gap-4 sm:gap-6 text-sm items-center">
           <a href="/archery-ranges/indoor/" class="text-white/80 hover:text-amber transition-colors hidden sm:inline">Indoor</a>
