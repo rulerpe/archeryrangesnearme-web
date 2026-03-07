@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { parseRanges, getRangesByState, getStateSlug } from '../../data/ranges';
+import { FEATURES } from '../../data/filters';
+
+const ranges = parseRanges();
+const byState = getRangesByState();
+const states = [...byState.entries()]
+  .map(([slug, r]) => ({ slug, name: r[0].state, count: r.length }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<BaseLayout
+  title="Archery Ranges Directory — Browse by State or Type"
+  description={`Browse all ${ranges.length.toLocaleString()} archery ranges in our directory. Filter by state, city, indoor, outdoor, 3D courses, lessons, and more.`}
+>
+  <Breadcrumbs crumbs={[{ label: 'Archery Ranges' }]} />
+
+  <h1 class="font-display text-4xl sm:text-5xl font-bold text-ink mb-4">
+    Archery Ranges Directory
+  </h1>
+  <p class="text-stone text-lg mb-12 max-w-xl">
+    Browse {ranges.length.toLocaleString()} archery ranges across all 50 states. Filter by type
+    or browse by state and city to find a range near you.
+  </p>
+
+  <h2 class="font-display text-2xl font-semibold text-ink mb-4">Browse by Type</h2>
+  <ul class="flex flex-wrap gap-2 mb-14">
+    {FEATURES.map(f => (
+      <li>
+        <a
+          href={`/archery-ranges/${f.slug}/`}
+          class="inline-block bg-cream-dark border border-tan text-forest text-sm px-4 py-2 rounded-full hover:bg-forest hover:text-white hover:border-forest transition-all font-medium"
+        >
+          {f.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <h2 class="font-display text-2xl font-semibold text-ink mb-5">Browse by State</h2>
+  <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+    {states.map(s => (
+      <li>
+        <a
+          href={`/archery-ranges/${s.slug}/`}
+          class="group block bg-cream-dark border border-tan rounded-xl p-4 hover:border-forest hover:shadow-sm transition-all"
+        >
+          <span class="font-display font-semibold text-forest text-sm block leading-snug group-hover:text-forest-dark">
+            {s.name}
+          </span>
+          <span class="text-xs text-stone mt-1 block">{s.count} ranges</span>
+          <span class="text-amber text-sm mt-1 inline-block group-hover:translate-x-0.5 transition-transform">→</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

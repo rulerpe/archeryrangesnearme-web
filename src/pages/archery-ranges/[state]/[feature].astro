@@ -48,7 +48,10 @@ const schema = {
   <h1 class="font-display text-4xl sm:text-5xl font-bold text-ink mb-3">
     {featureLabel} Archery Ranges in {stateName}
   </h1>
-  <p class="text-stone text-lg mb-10">{ranges.length} ranges found.</p>
+  <p class="text-stone text-lg mb-4">
+    Find {featureLabel.toLowerCase()} archery ranges in {stateName}. Browse {ranges.length}
+    location{ranges.length !== 1 ? 's' : ''} and compare hours, pricing, and services.
+  </p>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
     {ranges.map(r => <ListingCard range={r} />)}

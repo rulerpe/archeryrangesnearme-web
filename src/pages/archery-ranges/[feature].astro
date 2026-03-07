@@ -37,7 +37,10 @@ const schema = {
   <h1 class="font-display text-4xl sm:text-5xl font-bold text-ink mb-3">
     {featureLabel} Archery Ranges
   </h1>
-  <p class="text-stone text-lg mb-10">{ranges.length} ranges nationwide.</p>
+  <p class="text-stone text-lg mb-4">
+    Browse {ranges.length} {featureLabel.toLowerCase()} archery ranges across the United States.
+    Compare hours, pricing, and services — find the right range near you.
+  </p>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
     {ranges.map(r => <ListingCard range={r} />)}

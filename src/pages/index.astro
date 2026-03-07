@@ -15,6 +15,7 @@ for (const r of ranges) {
 }
 
 const states = [...stateCounts.values()].sort((a, b) => a.name.localeCompare(b.name));
+const topStates = [...stateCounts.values()].sort((a, b) => b.count - a.count).slice(0, 8);
 
 const schema = {
   '@context': 'https://schema.org',
@@ -41,8 +42,23 @@ const schema = {
       Filter by indoor, outdoor, pro shops, leagues, and more.
     </p>
     <p class="text-stone text-base mb-12 max-w-xl">
-      Select your state below to browse archery ranges and clubs by city.
+      Select your state below, or <a href="/archery-ranges/" class="text-forest underline hover:text-amber transition-colors">browse the full directory</a> to filter by type.
     </p>
+
+    <h2 class="font-display text-2xl font-semibold text-ink mb-4">Popular States</h2>
+    <ul class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-12">
+      {topStates.map(s => (
+        <li>
+          <a
+            href={`/archery-ranges/${s.slug}/`}
+            class="group block bg-forest text-white border border-forest rounded-xl p-4 hover:bg-forest-dark transition-all"
+          >
+            <span class="font-display font-semibold text-sm block leading-snug">{s.name}</span>
+            <span class="text-xs text-white/70 mt-1 block">{s.count} ranges →</span>
+          </a>
+        </li>
+      ))}
+    </ul>
 
     <h2 class="font-display text-2xl font-semibold text-ink mb-6">Browse by State</h2>
     <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
