@@ -13,7 +13,7 @@ export function makeTitle(type: PageType, params: Record<string, any>): string {
         ? `${params.featureLabel} Archery Ranges in ${params.state} | All Locations`
         : `${params.featureLabel} Archery Ranges | All Locations`;
     case 'home':
-      return 'Archery Ranges Near Me | Find Local Ranges';
+      return 'Archery Range Near Me — Find Local Ranges & Clubs';
   }
 }
 
@@ -34,7 +34,7 @@ export function makeDescription(type: PageType, params: Record<string, any>): st
         ? `Browse all ${params.featureLabel.toLowerCase()} archery ranges in ${params.state}. Filter by city, compare hours, pricing & services.`
         : `Browse all ${params.featureLabel.toLowerCase()} archery ranges across the US. Find locations, hours, pricing & services.`;
     case 'home':
-      return 'Find archery ranges near you across the US. Search by state and city — compare indoor, outdoor, 3D courses, lessons & pro shops.';
+      return 'Find archery ranges near you. Browse 5,600+ ranges across all 50 states — compare indoor, outdoor, 3D courses, lessons & pro shops.';
   }
 }
 
