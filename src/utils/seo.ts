@@ -7,7 +7,7 @@ export function makeTitle(type: PageType, params: Record<string, any>): string {
     case 'city':
       return `Archery Ranges in ${params.city}, ${params.state} | ${params.count} Near You`;
     case 'state':
-      return `Archery Ranges in ${params.state} | ${stateAbbr(params.state)} Ranges & Clubs`;
+      return `Archery Ranges in ${params.state} — ${params.count} Locations`;
     case 'feature':
       return params.state
         ? `${params.featureLabel} Archery Ranges in ${params.state} | All Locations`
