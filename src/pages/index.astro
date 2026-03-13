@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { parseRanges, getStateSlug } from '../data/ranges';
 import { makeTitle, makeDescription } from '../utils/seo';
+import { FAQS } from '../data/faqs';
 
 const ranges = parseRanges();
 const stateCounts = new Map<string, { name: string; slug: string; count: number }>();
@@ -17,20 +18,40 @@ for (const r of ranges) {
 const states = [...stateCounts.values()].sort((a, b) => a.name.localeCompare(b.name));
 const topStates = [...stateCounts.values()].sort((a, b) => b.count - a.count).slice(0, 8);
 
-const schema = {
+const totalCount = Math.floor(ranges.length / 100) * 100;
+const faqs = FAQS['home'];
+const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'Archery Ranges Near Me',
   url: Astro.site?.toString(),
-  description: makeDescription('home', {}),
+  description: makeDescription('home', { count: totalCount.toLocaleString() }),
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://archeryrangesnearme.com/search/?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+};
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(f => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
 };
 ---
 
 <BaseLayout
   title={makeTitle('home', {})}
-  description={makeDescription('home', {})}
+  description={makeDescription('home', { count: totalCount.toLocaleString() })}
 >
-  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 
   <div class="py-6 sm:py-10">
     <h1 class="font-display text-4xl sm:text-5xl font-bold text-ink leading-tight mb-4">
@@ -77,5 +98,17 @@ const schema = {
         </li>
       ))}
     </ul>
+
+    <section class="mt-16" aria-label="Frequently asked questions">
+      <h2 class="font-display text-2xl font-semibold text-ink mb-6">Frequently Asked Questions</h2>
+      <dl class="space-y-6 max-w-2xl">
+        {faqs.map(f => (
+          <div class="border-b border-tan pb-6">
+            <dt class="font-display font-semibold text-ink text-lg mb-2">{f.question}</dt>
+            <dd class="text-stone leading-relaxed">{f.answer}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
   </div>
 </BaseLayout>

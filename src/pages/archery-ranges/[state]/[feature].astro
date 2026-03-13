@@ -25,18 +25,19 @@ export async function getStaticPaths() {
 const { state: stateSlug, feature: featureSlug } = Astro.params;
 const { stateName, ranges } = Astro.props;
 const featureLabel = getFeatureLabel(featureSlug);
+const count = ranges.length.toLocaleString();
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  name: makeTitle('feature', { featureLabel, state: stateName }),
-  description: makeDescription('feature', { featureLabel, state: stateName }),
+  name: makeTitle('feature', { featureLabel, state: stateName, count }),
+  description: makeDescription('feature', { featureLabel, state: stateName, count }),
   url: new URL(`/archery-ranges/${stateSlug}/${featureSlug}/`, Astro.site).toString(),
 };
 ---
 
 <BaseLayout
-  title={makeTitle('feature', { featureLabel, state: stateName })}
-  description={makeDescription('feature', { featureLabel, state: stateName })}
+  title={makeTitle('feature', { featureLabel, state: stateName, count })}
+  description={makeDescription('feature', { featureLabel, state: stateName, count })}
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} />
 

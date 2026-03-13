@@ -10,8 +10,8 @@ export function makeTitle(type: PageType, params: Record<string, any>): string {
       return `Archery Ranges in ${params.state} — ${params.count} Locations`;
     case 'feature':
       return params.state
-        ? `${params.featureLabel} Archery Ranges in ${params.state} | All Locations`
-        : `${params.featureLabel} Archery Ranges | All Locations`;
+        ? `${params.featureLabel} Archery Ranges in ${params.state} — ${params.count} Locations`
+        : `${params.featureLabel} Archery Ranges Near You — ${params.count} Locations`;
     case 'home':
       return 'Archery Range Near Me — Find Local Ranges & Clubs';
   }
@@ -31,10 +31,10 @@ export function makeDescription(type: PageType, params: Record<string, any>): st
       return `Find ${params.count} archery ranges across ${params.state}. Browse by city — indoor, outdoor, 3D courses, lessons & pro shops.`;
     case 'feature':
       return params.state
-        ? `Browse all ${params.featureLabel.toLowerCase()} archery ranges in ${params.state}. Filter by city, compare hours, pricing & services.`
-        : `Browse all ${params.featureLabel.toLowerCase()} archery ranges across the US. Find locations, hours, pricing & services.`;
+        ? `Find ${params.featureLabel.toLowerCase()} archery ranges in ${params.state}. Browse ${params.count} locations — compare hours, pricing & services.`
+        : `Find ${params.featureLabel.toLowerCase()} archery ranges near you. Browse ${params.count} locations across all 50 states — compare hours, pricing & services.`;
     case 'home':
-      return 'Find archery ranges near you. Browse 5,600+ ranges across all 50 states — compare indoor, outdoor, 3D courses, lessons & pro shops.';
+      return `Find archery ranges near you. Browse ${params.count}+ ranges across all 50 states — compare indoor, outdoor, 3D courses, lessons & pro shops.`;
   }
 }
 

@@ -5,6 +5,7 @@ import ListingCard from '../../components/ListingCard.astro';
 import { parseRanges } from '../../data/ranges';
 import { FEATURES, filterByFeature, getFeatureLabel } from '../../data/filters';
 import { makeTitle, makeDescription } from '../../utils/seo';
+import { FAQS } from '../../data/faqs';
 
 export async function getStaticPaths() {
   return FEATURES.map(f => ({
@@ -17,20 +18,32 @@ const { feature: featureSlug } = Astro.params;
 const { featureSlug: _slug } = Astro.props;
 const ranges = filterByFeature(parseRanges(), featureSlug);
 const featureLabel = getFeatureLabel(featureSlug);
-const schema = {
+const count = ranges.length.toLocaleString();
+const faqs = FAQS[featureSlug] ?? [];
+const collectionSchema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  name: makeTitle('feature', { featureLabel }),
-  description: makeDescription('feature', { featureLabel }),
+  name: makeTitle('feature', { featureLabel, count }),
+  description: makeDescription('feature', { featureLabel, count }),
   url: new URL(`/archery-ranges/${featureSlug}/`, Astro.site).toString(),
 };
+const faqSchema = faqs.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(f => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+} : null;
 ---
 
 <BaseLayout
-  title={makeTitle('feature', { featureLabel })}
-  description={makeDescription('feature', { featureLabel })}
+  title={makeTitle('feature', { featureLabel, count })}
+  description={makeDescription('feature', { featureLabel, count })}
 >
-  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
+  {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
 
   <Breadcrumbs crumbs={[{ label: featureLabel }]} />
 
@@ -45,4 +58,18 @@ const schema = {
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
     {ranges.map(r => <ListingCard range={r} />)}
   </div>
+
+  {faqs.length > 0 && (
+    <section class="mt-16" aria-label="Frequently asked questions">
+      <h2 class="font-display text-2xl font-semibold text-ink mb-6">Frequently Asked Questions</h2>
+      <dl class="space-y-6 max-w-2xl">
+        {faqs.map(f => (
+          <div class="border-b border-tan pb-6">
+            <dt class="font-display font-semibold text-ink text-lg mb-2">{f.question}</dt>
+            <dd class="text-stone leading-relaxed">{f.answer}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  )}
 </BaseLayout>

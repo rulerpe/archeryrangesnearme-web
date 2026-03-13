@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getRangesByState, getCitySlug } from '../data/ranges';
+
+// Build state+city lookup at compile time for client-side matching
+const byState = getRangesByState();
+const lookup: { name: string; slug: string; cities: { name: string; slug: string }[] }[] = [];
+
+for (const [stateSlug, ranges] of byState.entries()) {
+  const stateName = ranges[0].state;
+  const cityMap = new Map<string, string>();
+  for (const r of ranges) {
+    const slug = getCitySlug(r.city);
+    if (!cityMap.has(slug)) cityMap.set(slug, r.city);
+  }
+  lookup.push({
+    name: stateName,
+    slug: stateSlug,
+    cities: [...cityMap.entries()].map(([slug, name]) => ({ slug, name })),
+  });
+}
+---
+
+<BaseLayout
+  title="Search Archery Ranges — Find Ranges Near You"
+  description="Search for archery ranges by state or city across all 50 states."
+>
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'SearchResultsPage',
+    name: 'Archery Range Search',
+    url: 'https://archeryrangesnearme.com/search/',
+  })} />
+
+  <div id="search-page" class="py-8 max-w-xl">
+    <h1 class="font-display text-4xl font-bold text-ink mb-4">Search Archery Ranges</h1>
+    <p class="text-stone text-lg mb-8">Enter a state or city to find archery ranges near you.</p>
+
+    <form id="search-form" action="/search/" method="get" class="flex gap-3 mb-10">
+      <input
+        id="search-input"
+        type="search"
+        name="q"
+        placeholder="e.g. Texas, Austin TX…"
+        autocomplete="off"
+        class="flex-1 border border-tan rounded-xl px-4 py-3 text-ink bg-cream-dark focus:outline-none focus:border-forest text-base"
+      />
+      <button
+        type="submit"
+        class="bg-forest text-white px-6 py-3 rounded-xl font-medium hover:bg-forest-dark transition-colors"
+      >
+        Search
+      </button>
+    </form>
+
+    <div id="search-status" class="text-stone mb-6 hidden"></div>
+
+    <p class="text-stone text-sm">
+      Or <a href="/archery-ranges/" class="text-forest underline hover:text-amber transition-colors">browse the full directory</a> by state and type.
+    </p>
+  </div>
+
+  <script define:vars={{ lookup }}>
+    function normalize(str) {
+      return str.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+    }
+
+    function findMatch(query) {
+      const q = normalize(query);
+      if (!q) return null;
+
+      // Exact state match
+      for (const state of lookup) {
+        if (normalize(state.name) === q) {
+          return `/archery-ranges/${state.slug}/`;
+        }
+      }
+
+      // State starts-with match (e.g. "new york" matches "new york")
+      for (const state of lookup) {
+        if (normalize(state.name).startsWith(q) || q.startsWith(normalize(state.name))) {
+          return `/archery-ranges/${state.slug}/`;
+        }
+      }
+
+      // City match — check "city, state" or "city state" or just "city"
+      for (const state of lookup) {
+        const statePart = normalize(state.name);
+        for (const city of state.cities) {
+          const cityPart = normalize(city.name);
+          if (
+            q === cityPart ||
+            q === `${cityPart} ${statePart}` ||
+            q.startsWith(`${cityPart},`) ||
+            q.startsWith(`${cityPart} `)
+          ) {
+            return `/archery-ranges/${state.slug}/${city.slug}/`;
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function run() {
+      const params = new URLSearchParams(window.location.search);
+      const query = params.get('q')?.trim() ?? '';
+
+      const input = document.getElementById('search-input');
+      const status = document.getElementById('search-status');
+
+      if (input && query) input.value = query;
+
+      if (!query) return;
+
+      const dest = findMatch(query);
+      if (dest) {
+        window.location.replace(dest);
+      } else {
+        if (status) {
+          status.textContent = `No exact match for "${query}" — browse the directory to find ranges near you.`;
+          status.classList.remove('hidden');
+        }
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', run);
+    } else {
+      run();
+    }
+  </script>
+</BaseLayout>

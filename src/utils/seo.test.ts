@@ -10,25 +10,25 @@ describe('makeTitle', () => {
     expect(makeTitle('city', { city: 'Austin', state: 'TX', count: 5 }))
       .toBe('Archery Ranges in Austin, TX | 5 Near You');
   });
-  it('generates state title with abbreviation', () => {
+  it('generates state title with count', () => {
     expect(makeTitle('state', { state: 'Texas', count: 120 }))
-      .toBe('Archery Ranges in Texas | TX Ranges & Clubs');
+      .toBe('Archery Ranges in Texas — 120 Locations');
   });
   it('generates feature+state title', () => {
-    expect(makeTitle('feature', { featureLabel: 'Indoor', state: 'Texas' }))
-      .toBe('Indoor Archery Ranges in Texas | All Locations');
+    expect(makeTitle('feature', { featureLabel: 'Indoor', state: 'Texas', count: 45 }))
+      .toBe('Indoor Archery Ranges in Texas — 45 Locations');
   });
   it('generates global feature title (no state)', () => {
-    expect(makeTitle('feature', { featureLabel: 'Indoor' }))
-      .toBe('Indoor Archery Ranges | All Locations');
+    expect(makeTitle('feature', { featureLabel: 'Indoor', count: '1,200' }))
+      .toBe('Indoor Archery Ranges Near You — 1,200 Locations');
   });
   it('generates homepage title', () => {
     expect(makeTitle('home', {}))
-      .toBe('Archery Ranges Near Me | Find Local Ranges');
+      .toBe('Archery Range Near Me — Find Local Ranges & Clubs');
   });
-  it('generates New York abbreviation correctly', () => {
+  it('generates New York state title with count', () => {
     expect(makeTitle('state', { state: 'New York', count: 50 }))
-      .toBe('Archery Ranges in New York | NY Ranges & Clubs');
+      .toBe('Archery Ranges in New York — 50 Locations');
   });
 });
 
@@ -61,13 +61,15 @@ describe('makeDescription', () => {
     expect(d).toContain('indoor');
   });
   it('generates global feature description without state', () => {
-    const d = makeDescription('feature', { featureLabel: 'Indoor' });
+    const d = makeDescription('feature', { featureLabel: 'Indoor', count: 1200 });
     expect(d).not.toContain('undefined');
     expect(d).toContain('indoor');
+    expect(d).toContain('1200');
   });
   it('generates homepage description', () => {
-    const d = makeDescription('home', {});
+    const d = makeDescription('home', { count: '2,900' });
     expect(d).toBeTruthy();
+    expect(d).toContain('2,900+');
     expect(d.length).toBeGreaterThan(50);
   });
 });
