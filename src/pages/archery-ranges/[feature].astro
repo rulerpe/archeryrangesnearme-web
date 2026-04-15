@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import ListingCard from '../../components/ListingCard.astro';
-import { parseRanges } from '../../data/ranges';
+import { parseRanges, getStateSlug } from '../../data/ranges';
 import { FEATURES, filterByFeature, getFeatureLabel } from '../../data/filters';
 import { makeTitle, makeDescription } from '../../utils/seo';
 import { FAQS } from '../../data/faqs';
@@ -20,6 +20,15 @@ const ranges = filterByFeature(parseRanges(), featureSlug);
 const featureLabel = getFeatureLabel(featureSlug);
 const count = ranges.length.toLocaleString();
 const faqs = FAQS[featureSlug] ?? [];
+
+const stateBuckets = new Map<string, { name: string; slug: string; count: number }>();
+for (const r of ranges) {
+  const slug = getStateSlug(r.state);
+  const b = stateBuckets.get(slug) ?? { name: r.state, slug, count: 0 };
+  b.count++;
+  stateBuckets.set(slug, b);
+}
+const statesByCount = [...stateBuckets.values()].sort((a, b) => b.count - a.count);
 const collectionSchema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -48,13 +57,31 @@ const faqSchema = faqs.length > 0 ? {
   <Breadcrumbs crumbs={[{ label: featureLabel }]} />
 
   <h1 class="font-display text-4xl sm:text-5xl font-bold text-ink mb-3">
-    {featureLabel} Archery Ranges
+    {featureLabel} Archery Ranges Near You
   </h1>
-  <p class="text-stone text-lg mb-4">
-    Browse {ranges.length} {featureLabel.toLowerCase()} archery ranges across the United States.
-    Compare hours, pricing, and services — find the right range near you.
+  <p class="text-stone text-lg mb-6 max-w-2xl">
+    {ranges.length.toLocaleString()} {featureLabel.toLowerCase()} archery ranges across {statesByCount.length} U.S. states.
+    Pick your state below to see ranges near you, or scroll to browse the full list.
   </p>
 
+  <section aria-label="Browse by state" class="mb-12">
+    <h2 class="font-display text-2xl font-semibold text-ink mb-4">Find {featureLabel} Ranges by State</h2>
+    <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      {statesByCount.map(s => (
+        <li>
+          <a
+            href={`/archery-ranges/${s.slug}/${featureSlug}/`}
+            class="group block bg-forest text-white border border-forest rounded-xl p-4 hover:bg-forest-dark transition-all"
+          >
+            <span class="font-display font-semibold text-sm block leading-snug">{s.name}</span>
+            <span class="text-xs text-white/70 mt-1 block">{s.count} {s.count === 1 ? 'range' : 'ranges'} →</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <h2 class="font-display text-2xl font-semibold text-ink mb-4">All {featureLabel} Ranges</h2>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
     {ranges.map(r => <ListingCard range={r} />)}
   </div>
