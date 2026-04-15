@@ -23,8 +23,8 @@ describe('makeTitle', () => {
       .toBe('Indoor Archery Ranges Near You — 1,200 Locations');
   });
   it('generates homepage title', () => {
-    expect(makeTitle('home', {}))
-      .toBe('Archery Range Near Me — Find Local Ranges & Clubs');
+    expect(makeTitle('home', { count: '2,900' }))
+      .toBe('Archery Range Near Me — 2,900+ Ranges in All 50 States');
   });
   it('generates New York state title with count', () => {
     expect(makeTitle('state', { state: 'New York', count: 50 }))

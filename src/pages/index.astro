@@ -47,7 +47,7 @@ const faqSchema = {
 ---
 
 <BaseLayout
-  title={makeTitle('home', {})}
+  title={makeTitle('home', { count: totalCount.toLocaleString() })}
   description={makeDescription('home', { count: totalCount.toLocaleString() })}
 >
   <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
