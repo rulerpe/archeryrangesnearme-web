@@ -28,20 +28,24 @@ export function filterByFeature(ranges: Range[], featureSlug: string): Range[] {
   return ranges.filter(feature.filter);
 }
 
-const FEATURE_ANCHOR: Record<string, (loc: string) => string> = {
-  'indoor':           (loc) => `Indoor Archery Ranges in ${loc}`,
-  'outdoor':          (loc) => `Outdoor Archery Ranges in ${loc}`,
-  'with-lessons':     (loc) => `Archery Lessons in ${loc}`,
-  'with-rental':      (loc) => `Archery Ranges with Equipment Rental in ${loc}`,
-  'with-pro-shop':    (loc) => `Archery Pro Shops in ${loc}`,
-  'with-3d-course':   (loc) => `3D Archery Courses in ${loc}`,
-  'with-leagues':     (loc) => `Archery Leagues in ${loc}`,
-  'with-tournaments': (loc) => `Archery Tournaments in ${loc}`,
-  'walk-in':          (loc) => `Walk-in Archery Ranges in ${loc}`,
+const FEATURE_TITLE: Record<string, string> = {
+  'indoor':           'Indoor Archery Ranges',
+  'outdoor':          'Outdoor Archery Ranges',
+  'with-lessons':     'Archery Lessons',
+  'with-rental':      'Archery Ranges with Equipment Rental',
+  'with-pro-shop':    'Archery Pro Shops',
+  'with-3d-course':   '3D Archery Courses',
+  'with-leagues':     'Archery Leagues',
+  'with-tournaments': 'Archery Tournaments',
+  'walk-in':          'Walk-in Archery Ranges',
 };
 
+export function getFeatureTitle(slug: string): string {
+  return FEATURE_TITLE[slug] ?? getFeatureLabel(slug);
+}
+
 export function getFeatureAnchor(slug: string, location: string): string {
-  return FEATURE_ANCHOR[slug]?.(location) ?? `${getFeatureLabel(slug)} in ${location}`;
+  return `${getFeatureTitle(slug)} in ${location}`;
 }
 
 export function countFeaturesIn(ranges: Range[]): Map<string, number> {

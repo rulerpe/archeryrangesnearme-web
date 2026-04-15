@@ -62,7 +62,7 @@ const safeAddress = range.full_address.replace(/\\/g, '\\\\').replace(/'/g, "\\'
 
   <div class="max-w-3xl">
     <Breadcrumbs crumbs={[
-      { label: range.state, href: `/archery-ranges/${stateSlug}/` },
+      { label: range.state.replace(/\bOf\b/g, 'of'), href: `/archery-ranges/${stateSlug}/` },
       { label: range.city, href: `/archery-ranges/${stateSlug}/${citySlug}/` },
       { label: range.name },
     ]} />

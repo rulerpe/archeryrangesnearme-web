@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import ListingCard from '../../components/ListingCard.astro';
 import { parseRanges, getStateSlug } from '../../data/ranges';
-import { FEATURES, filterByFeature, getFeatureLabel } from '../../data/filters';
+import { FEATURES, filterByFeature, getFeatureLabel, getFeatureTitle } from '../../data/filters';
 import { makeTitle, makeDescription } from '../../utils/seo';
 import { FAQS } from '../../data/faqs';
 
@@ -18,7 +18,8 @@ const { feature: featureSlug } = Astro.params;
 const { featureSlug: _slug } = Astro.props;
 const ranges = filterByFeature(parseRanges(), featureSlug);
 const featureLabel = getFeatureLabel(featureSlug);
-const count = ranges.length.toLocaleString();
+const featureTitle = getFeatureTitle(featureSlug);
+const count = ranges.length;
 const faqs = FAQS[featureSlug] ?? [];
 
 const stateBuckets = new Map<string, { name: string; slug: string; count: number }>();
@@ -32,8 +33,8 @@ const statesByCount = [...stateBuckets.values()].sort((a, b) => b.count - a.coun
 const collectionSchema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  name: makeTitle('feature', { featureLabel, count }),
-  description: makeDescription('feature', { featureLabel, count }),
+  name: makeTitle('feature', { featureTitle, count }),
+  description: makeDescription('feature', { featureTitle, count }),
   url: new URL(`/archery-ranges/${featureSlug}/`, Astro.site).toString(),
 };
 const faqSchema = faqs.length > 0 ? {
@@ -48,8 +49,8 @@ const faqSchema = faqs.length > 0 ? {
 ---
 
 <BaseLayout
-  title={makeTitle('feature', { featureLabel, count })}
-  description={makeDescription('feature', { featureLabel, count })}
+  title={makeTitle('feature', { featureTitle, count })}
+  description={makeDescription('feature', { featureTitle, count })}
 >
   <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
   {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
@@ -57,15 +58,15 @@ const faqSchema = faqs.length > 0 ? {
   <Breadcrumbs crumbs={[{ label: featureLabel }]} />
 
   <h1 class="font-display text-4xl sm:text-5xl font-bold text-ink mb-3">
-    {featureLabel} Archery Ranges Near You
+    {featureTitle} Near You
   </h1>
   <p class="text-stone text-lg mb-6 max-w-2xl">
-    {ranges.length.toLocaleString()} {featureLabel.toLowerCase()} archery ranges across {statesByCount.length} U.S. states.
+    {ranges.length.toLocaleString()} {featureTitle.toLowerCase()} across {statesByCount.length} U.S. states.
     Pick your state below to see ranges near you, or scroll to browse the full list.
   </p>
 
   <section aria-label="Browse by state" class="mb-12">
-    <h2 class="font-display text-2xl font-semibold text-ink mb-4">Find {featureLabel} Ranges by State</h2>
+    <h2 class="font-display text-2xl font-semibold text-ink mb-4">Find {featureTitle} by State</h2>
     <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
       {statesByCount.map(s => (
         <li>
@@ -81,7 +82,7 @@ const faqSchema = faqs.length > 0 ? {
     </ul>
   </section>
 
-  <h2 class="font-display text-2xl font-semibold text-ink mb-4">All {featureLabel} Ranges</h2>
+  <h2 class="font-display text-2xl font-semibold text-ink mb-4">All {featureTitle}</h2>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
     {ranges.map(r => <ListingCard range={r} />)}
   </div>

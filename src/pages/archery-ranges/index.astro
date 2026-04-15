@@ -2,12 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { parseRanges, getRangesByState, getStateSlug } from '../../data/ranges';
-import { FEATURES } from '../../data/filters';
+import { FEATURES, getFeatureTitle } from '../../data/filters';
 
 const ranges = parseRanges();
 const byState = getRangesByState();
 const states = [...byState.entries()]
-  .map(([slug, r]) => ({ slug, name: r[0].state, count: r.length }))
+  .map(([slug, r]) => ({ slug, name: r[0].state.replace(/\bOf\b/g, 'of'), count: r.length }))
   .sort((a, b) => a.name.localeCompare(b.name));
 ---
 
@@ -33,7 +33,7 @@ const states = [...byState.entries()]
           href={`/archery-ranges/${f.slug}/`}
           class="inline-block bg-cream-dark border border-tan text-forest text-sm px-4 py-2 rounded-full hover:bg-forest hover:text-white hover:border-forest transition-all font-medium"
         >
-          {f.label}
+          {getFeatureTitle(f.slug)}
         </a>
       </li>
     ))}
@@ -50,7 +50,7 @@ const states = [...byState.entries()]
           <span class="font-display font-semibold text-forest text-sm block leading-snug group-hover:text-forest-dark">
             {s.name}
           </span>
-          <span class="text-xs text-stone mt-1 block">{s.count} ranges</span>
+          <span class="text-xs text-stone mt-1 block">{s.count} {s.count === 1 ? 'range' : 'ranges'}</span>
           <span class="text-amber text-sm mt-1 inline-block group-hover:translate-x-0.5 transition-transform">→</span>
         </a>
       </li>

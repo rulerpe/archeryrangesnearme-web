@@ -3,7 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import ListingCard from '../../../components/ListingCard.astro';
 import { getRangesByState } from '../../../data/ranges';
-import { FEATURES, filterByFeature, getFeatureLabel } from '../../../data/filters';
+import { FEATURES, filterByFeature, getFeatureLabel, getFeatureTitle } from '../../../data/filters';
 import { makeTitle, makeDescription } from '../../../utils/seo';
 
 export async function getStaticPaths() {
@@ -25,33 +25,35 @@ export async function getStaticPaths() {
 const { state: stateSlug, feature: featureSlug } = Astro.params;
 const { stateName, ranges } = Astro.props;
 const featureLabel = getFeatureLabel(featureSlug);
-const count = ranges.length.toLocaleString();
+const featureTitle = getFeatureTitle(featureSlug);
+const count = ranges.length;
+const displayState = stateName.replace(/\bOf\b/g, 'of');
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  name: makeTitle('feature', { featureLabel, state: stateName, count }),
-  description: makeDescription('feature', { featureLabel, state: stateName, count }),
+  name: makeTitle('feature', { featureTitle, state: stateName, count }),
+  description: makeDescription('feature', { featureTitle, state: stateName, count }),
   url: new URL(`/archery-ranges/${stateSlug}/${featureSlug}/`, Astro.site).toString(),
 };
 ---
 
 <BaseLayout
-  title={makeTitle('feature', { featureLabel, state: stateName, count })}
-  description={makeDescription('feature', { featureLabel, state: stateName, count })}
+  title={makeTitle('feature', { featureTitle, state: stateName, count })}
+  description={makeDescription('feature', { featureTitle, state: stateName, count })}
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} />
 
   <Breadcrumbs crumbs={[
-    { label: stateName, href: `/archery-ranges/${stateSlug}/` },
+    { label: displayState, href: `/archery-ranges/${stateSlug}/` },
     { label: featureLabel },
   ]} />
 
   <h1 class="font-display text-4xl sm:text-5xl font-bold text-ink mb-3">
-    {featureLabel} Archery Ranges in {stateName}
+    {featureTitle} in {displayState}
   </h1>
   <p class="text-stone text-lg mb-4">
-    Find {featureLabel.toLowerCase()} archery ranges in {stateName}. Browse {ranges.length}
-    location{ranges.length !== 1 ? 's' : ''} and compare hours, pricing, and services.
+    Find {featureTitle.toLowerCase()} in {displayState}. Browse {count}
+    location{count !== 1 ? 's' : ''} and compare hours, pricing, and services.
   </p>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">

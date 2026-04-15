@@ -15,6 +15,7 @@ export async function getStaticPaths() {
 
 const { state: stateSlug } = Astro.params;
 const { stateName, ranges } = Astro.props;
+const displayState = stateName.replace(/\bOf\b/g, 'of');
 
 const cityCounts = new Map<string, { name: string; slug: string; count: number }>();
 for (const r of ranges) {
@@ -42,15 +43,15 @@ const schema = {
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} />
 
-  <Breadcrumbs crumbs={[{ label: stateName }]} />
+  <Breadcrumbs crumbs={[{ label: displayState }]} />
 
   <h1 class="font-display text-4xl sm:text-5xl font-bold text-ink mb-3">
-    Archery Ranges in {stateName}
+    Archery Ranges in {displayState}
   </h1>
   <p class="text-stone text-lg mb-4">
-    Looking for an archery range in {stateName}? Browse our complete directory of {ranges.length} ranges
-    across {cities.length} {cities.length === 1 ? 'city' : 'cities'} — from indoor facilities and 3D courses
-    to bowhunting clubs and pro shops.
+    Looking for an archery range in {displayState}? Browse our complete directory of {ranges.length}
+    {ranges.length === 1 ? 'range' : 'ranges'} across {cities.length} {cities.length === 1 ? 'city' : 'cities'}
+    — from indoor facilities and 3D courses to bowhunting clubs and pro shops.
   </p>
 
   <h2 class="font-display text-2xl font-semibold text-ink mb-5">Browse by City</h2>
@@ -70,7 +71,7 @@ const schema = {
 
   {activeFeatures.length > 0 && (
   <>
-  <h2 class="font-display text-2xl font-semibold text-ink mb-4">Browse {stateName} Archery Ranges by Type</h2>
+  <h2 class="font-display text-2xl font-semibold text-ink mb-4">Browse {displayState} Archery Ranges by Type</h2>
   <ul class="flex flex-wrap gap-2">
     {activeFeatures.map(f => (
       <li>
@@ -78,7 +79,7 @@ const schema = {
           href={`/archery-ranges/${stateSlug}/${f.slug}/`}
           class="inline-block bg-cream-dark border border-tan text-forest text-sm px-4 py-2 rounded-full hover:bg-forest hover:text-white hover:border-forest transition-all font-medium"
         >
-          {getFeatureAnchor(f.slug, stateName)} <span class="text-stone">({featureCounts.get(f.slug)})</span>
+          {getFeatureAnchor(f.slug, displayState)} <span class="text-stone">({featureCounts.get(f.slug)})</span>
         </a>
       </li>
     ))}

@@ -1,19 +1,37 @@
 type PageType = 'listing' | 'city' | 'state' | 'feature' | 'home';
 
+function fmt(n: number | string): string {
+  return typeof n === 'number' ? n.toLocaleString() : n;
+}
+
+function locations(n: number): string {
+  return n === 1 ? '1 Location' : `${fmt(n)} Locations`;
+}
+
+function rangesPhrase(n: number): string {
+  return n === 1 ? '1 archery range' : `${fmt(n)} archery ranges`;
+}
+
+function fixStateName(s: string): string {
+  return s.replace(/\bOf\b/g, 'of');
+}
+
 export function makeTitle(type: PageType, params: Record<string, any>): string {
   switch (type) {
     case 'listing':
-      return `${params.name} — Archery Range in ${params.city}, ${params.state}`;
+      return `${params.name} — Archery Range in ${params.city}, ${fixStateName(params.state)}`;
     case 'city':
-      return `Archery Ranges in ${params.city}, ${params.state} | ${params.count} Near You`;
+      return `Archery Ranges in ${params.city}, ${fixStateName(params.state)} | ${fmt(params.count)} Near You`;
     case 'state':
-      return `Archery Ranges in ${params.state} — ${params.count} Locations`;
-    case 'feature':
+      return `Archery Ranges in ${fixStateName(params.state)} — ${locations(params.count)}`;
+    case 'feature': {
+      const phrase = params.featureTitle ?? params.featureLabel;
       return params.state
-        ? `${params.featureLabel} Archery Ranges in ${params.state} — ${params.count} Locations`
-        : `${params.featureLabel} Archery Ranges Near You — ${params.count} Locations`;
+        ? `${phrase} in ${fixStateName(params.state)} — ${locations(params.count)}`
+        : `${phrase} Near You — ${locations(params.count)}`;
+    }
     case 'home':
-      return `Archery Range Near Me — ${params.count}+ Ranges in All 50 States`;
+      return `Archery Range Near Me — ${fmt(params.count)}+ Ranges in All 50 States`;
   }
 }
 
@@ -23,18 +41,21 @@ export function makeDescription(type: PageType, params: Record<string, any>): st
       const facility = params.indoorOutdoor
         ? `${capitalize(params.indoorOutdoor)} archery range`
         : 'Archery range';
-      return `${params.name} is an archery range in ${params.city}, ${params.state}. ${facility}. See hours, directions, pricing & services.`;
+      return `${params.name} is an archery range in ${params.city}, ${fixStateName(params.state)}. ${facility}. See hours, directions, pricing & services.`;
     }
     case 'city':
-      return `Browse ${params.count} archery ranges in ${params.city}, ${params.state}. Compare hours, pricing, indoor/outdoor lanes, lessons & equipment rental.`;
+      return `Browse ${rangesPhrase(params.count)} in ${params.city}, ${fixStateName(params.state)}. Compare hours, pricing, indoor/outdoor lanes, lessons & equipment rental.`;
     case 'state':
-      return `Find ${params.count} archery ranges across ${params.state}. Browse by city — indoor, outdoor, 3D courses, lessons & pro shops.`;
-    case 'feature':
+      return `Find ${rangesPhrase(params.count)} across ${fixStateName(params.state)}. Browse by city — indoor, outdoor, 3D courses, lessons & pro shops.`;
+    case 'feature': {
+      const phrase = (params.featureTitle ?? params.featureLabel ?? '').toLowerCase();
+      const loc = params.count === 1 ? '1 location' : `${fmt(params.count)} locations`;
       return params.state
-        ? `Find ${params.featureLabel.toLowerCase()} archery ranges in ${params.state}. Browse ${params.count} locations — compare hours, pricing & services.`
-        : `Find ${params.featureLabel.toLowerCase()} archery ranges near you. Browse ${params.count} locations across all 50 states — compare hours, pricing & services.`;
+        ? `Find ${phrase} in ${fixStateName(params.state)}. Browse ${loc} — compare hours, pricing & services.`
+        : `Find ${phrase} near you. Browse ${loc} across all 50 states — compare hours, pricing & services.`;
+    }
     case 'home':
-      return `Find an archery range near you in seconds — browse ${params.count}+ U.S. ranges with hours, directions, pricing, indoor/outdoor lanes, 3D courses, lessons & pro shops.`;
+      return `Find an archery range near you in seconds — browse ${fmt(params.count)}+ U.S. ranges with hours, directions, pricing, indoor/outdoor lanes, 3D courses, lessons & pro shops.`;
   }
 }
 

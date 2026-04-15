@@ -10,7 +10,7 @@ const stateCounts = new Map<string, { name: string; slug: string; count: number 
 for (const r of ranges) {
   const slug = getStateSlug(r.state);
   if (!stateCounts.has(slug)) {
-    stateCounts.set(slug, { name: r.state, slug, count: 0 });
+    stateCounts.set(slug, { name: r.state.replace(/\bOf\b/g, 'of'), slug, count: 0 });
   }
   stateCounts.get(slug)!.count++;
 }
@@ -25,7 +25,7 @@ const websiteSchema = {
   '@type': 'WebSite',
   name: 'Archery Ranges Near Me',
   url: Astro.site?.toString(),
-  description: makeDescription('home', { count: totalCount.toLocaleString() }),
+  description: makeDescription('home', { count: totalCount }),
   potentialAction: {
     '@type': 'SearchAction',
     target: {
@@ -47,8 +47,8 @@ const faqSchema = {
 ---
 
 <BaseLayout
-  title={makeTitle('home', { count: totalCount.toLocaleString() })}
-  description={makeDescription('home', { count: totalCount.toLocaleString() })}
+  title={makeTitle('home', { count: totalCount })}
+  description={makeDescription('home', { count: totalCount })}
 >
   <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
