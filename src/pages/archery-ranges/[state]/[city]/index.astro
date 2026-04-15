@@ -3,7 +3,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
 import ListingCard from '../../../../components/ListingCard.astro';
 import { getRangesByState, getCitySlug } from '../../../../data/ranges';
-import { FEATURES } from '../../../../data/filters';
+import { FEATURES, countFeaturesIn, getFeatureAnchor } from '../../../../data/filters';
 import { makeTitle, makeDescription } from '../../../../utils/seo';
 
 export async function getStaticPaths() {
@@ -28,6 +28,10 @@ export async function getStaticPaths() {
 
 const { state: stateSlug, city: citySlug } = Astro.params;
 const { stateName, cityName, ranges } = Astro.props;
+
+const stateRanges = getRangesByState().get(stateSlug) ?? [];
+const stateFeatureCounts = countFeaturesIn(stateRanges);
+const activeFeatures = FEATURES.filter(f => (stateFeatureCounts.get(f.slug) ?? 0) > 0);
 
 const schema = {
   '@context': 'https://schema.org',
@@ -63,15 +67,23 @@ const schema = {
   </div>
 
   <div class="mt-12">
-    <h2 class="font-display text-xl font-semibold text-ink mb-3">Filter {stateName} by Type</h2>
+    <h2 class="font-display text-xl font-semibold text-ink mb-3">More Archery Ranges in {stateName}</h2>
     <ul class="flex flex-wrap gap-2">
-      {FEATURES.map(f => (
+      <li>
+        <a
+          href={`/archery-ranges/${stateSlug}/`}
+          class="inline-block bg-forest text-white border border-forest text-sm px-4 py-2 rounded-full hover:bg-forest-dark transition-all font-medium"
+        >
+          All Archery Ranges in {stateName}
+        </a>
+      </li>
+      {activeFeatures.map(f => (
         <li>
           <a
             href={`/archery-ranges/${stateSlug}/${f.slug}/`}
             class="inline-block bg-cream-dark border border-tan text-forest text-sm px-4 py-2 rounded-full hover:bg-forest hover:text-white hover:border-forest transition-all font-medium"
           >
-            {f.label}
+            {getFeatureAnchor(f.slug, stateName)} <span class="text-stone">({stateFeatureCounts.get(f.slug)})</span>
           </a>
         </li>
       ))}
